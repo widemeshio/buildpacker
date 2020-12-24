@@ -1,7 +1,7 @@
 package build
 
 import (
-	"fmt"
+	"github.com/widemeshcloud/pack-shimmer/pkg/run"
 
 	"github.com/spf13/cobra"
 )
@@ -9,6 +9,7 @@ import (
 var pathArg string
 var builderArg string
 var buildpacksArg []string
+var envsArg []string
 
 // Command command definition
 var Command = &cobra.Command{
@@ -17,14 +18,25 @@ var Command = &cobra.Command{
 	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		imageTag := args[0]
-		fmt.Printf("image tag: %s\n", imageTag)
-		return fmt.Errorf("h")
+		pack := run.Pack{}
+		pack.Builder = builderArg
+		pack.Buildpacks = buildpacksArg
+		pack.Env = envsArg
+		pack.ImageTag = imageTag
+		pack.Path = pathArg
+		return pack.Run()
 	},
 }
 
 func init() {
 	Command.Flags().StringVarP(&pathArg, "path", "p", ".", "--path <directory>")
 	Command.Flags().StringVarP(&builderArg, "builder", "B", "", "Builder image")
+	Command.Flags().StringSliceVarP(&envsArg, "env", "e", nil, `
+	Build-time environment variable, in the form 'VAR=VALUE' or 'VAR'.
+                                 When using latter value-less form, value will be taken from current
+                                   environment at the time this command is executed.
+                                 This flag may be specified multiple times and will override
+                                   individual values defined by --env-file.`)
 	Command.Flags().StringSliceVarP(&buildpacksArg, "buildpack", "b", nil, `
 	Buildpack to use. One of:
                                    a buildpack by id and version in the form of '<buildpack>@<version>',
