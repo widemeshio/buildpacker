@@ -1,6 +1,7 @@
 package run
 
 import (
+	"context"
 	"os"
 	"os/exec"
 )
@@ -14,13 +15,13 @@ type Config struct {
 	Env        []string
 }
 
-// Pack runs pack
-type Pack struct {
+// CnbPack runs pack
+type CnbPack struct {
 	Config
 }
 
 // Run runs pack command
-func (pack *Pack) Run() error {
+func (pack *CnbPack) Run(ctx context.Context) error {
 	args := []string{"build", "--path", pack.Path, "--trust-builder", "--builder", pack.Builder}
 	for _, bp := range pack.Buildpacks {
 		args = append(args, "--buildpack", bp)

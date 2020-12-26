@@ -1,6 +1,7 @@
 package build
 
 import (
+	"context"
 	"fmt"
 	"os"
 
@@ -22,13 +23,13 @@ var Command = &cobra.Command{
 	RunE: func(cmd *cobra.Command, args []string) error {
 		fmt.Fprintf(os.Stderr, "buildpacks shimmer building\n")
 		imageTag := args[0]
-		pack := run.Pack{}
+		pack := run.ShimmerPack{}
 		pack.Builder = builderArg
 		pack.Buildpacks = buildpacksArg
 		pack.Env = envsArg
 		pack.ImageTag = imageTag
 		pack.Path = pathArg
-		return pack.Run()
+		return pack.Run(context.Background())
 	},
 }
 
