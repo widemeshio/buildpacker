@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
+	"log"
 
 	"github.com/widemeshcloud/pack-shimmer/pkg/shimmer/sources"
 )
@@ -15,11 +16,12 @@ type Shimmer struct {
 
 // Apply prepares all the specified buildpacks with a shim and returns path to local directories with shim applied
 func (shimmer *Shimmer) Apply(ctx context.Context, buildpacks []string) ([]string, error) {
+	log.Printf("sources %v", shimmer.Sources)
 	unpackers, err := shimmer.createUnpackers(ctx, buildpacks)
 	if err != nil {
 		return nil, fmt.Errorf("failed to build unpackers, %w", err)
 	}
-	localBuildpacks := make([]string, 0, len(buildpacks))
+	localBuildpacks := make([]string, len(buildpacks))
 	for ix, unpacker := range unpackers {
 		destinationDir, err := ioutil.TempDir("", "buildpack-shimmed-*")
 		if err != nil {

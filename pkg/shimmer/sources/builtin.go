@@ -8,7 +8,7 @@ func registerBuiltinSource(src Source) {
 
 // BuiltIn returns a copy of all builtin buildpack sources
 func BuiltIn() []Source {
-	cp := make([]Source, 0, len(builtin))
+	cp := make([]Source, len(builtin))
 	copy(cp, builtin)
 	return cp
 }

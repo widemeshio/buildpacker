@@ -18,7 +18,7 @@ func (shimmer *Shimmer) createUnpacker(ctx context.Context, buildpack string) so
 }
 
 func (shimmer *Shimmer) createUnpackers(ctx context.Context, buildpacks []string) ([]sources.Unpacker, error) {
-	unpackers := make([]sources.Unpacker, 0, len(buildpacks))
+	unpackers := make([]sources.Unpacker, len(buildpacks))
 	for ix, buildpack := range buildpacks {
 		unpacker := shimmer.createUnpacker(ctx, buildpack)
 		if unpacker == nil {
