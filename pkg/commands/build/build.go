@@ -1,6 +1,9 @@
 package build
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/widemeshcloud/pack-shimmer/pkg/run"
 
 	"github.com/spf13/cobra"
@@ -17,6 +20,7 @@ var Command = &cobra.Command{
 	Short: "builds an image",
 	Args:  cobra.MinimumNArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
+		fmt.Fprintf(os.Stderr, "buildpacks shimmer building\n")
 		imageTag := args[0]
 		pack := run.Pack{}
 		pack.Builder = builderArg
