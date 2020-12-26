@@ -17,9 +17,10 @@ var envsArg []string
 
 // Command command definition
 var Command = &cobra.Command{
-	Use:   "build <image-name> [flags]",
-	Short: "builds an image",
-	Args:  cobra.MinimumNArgs(1),
+	Use:          "build <image-name> [flags]",
+	Short:        "builds an image",
+	Args:         cobra.MinimumNArgs(1),
+	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
 		fmt.Fprintf(os.Stderr, "buildpacks shimmer building\n")
 		imageTag := args[0]

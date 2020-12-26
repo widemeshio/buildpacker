@@ -2,6 +2,7 @@ package run
 
 import (
 	"context"
+	"log"
 	"os"
 	"os/exec"
 )
@@ -27,6 +28,7 @@ func (pack *CnbPack) Run(ctx context.Context) error {
 		args = append(args, "--buildpack", bp)
 	}
 	args = append(args, pack.ImageTag)
+	log.Printf("pack args: %#v", args)
 	cmd := exec.Command("pack", args...)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
