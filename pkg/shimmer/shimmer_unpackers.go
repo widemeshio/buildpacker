@@ -32,25 +32,45 @@ func (shimmer *Shimmer) createUnpackers(ctx context.Context, buildpacks []string
 	return unpackers, nil
 }
 
-func (shimmer *Shimmer) unpack(ctx context.Context, buildpacks []string) ([]string, error) {
+func (shimmer *Shimmer) unpack(ctx context.Context, buildpacks []string) ([]UnpackedBuildpack, error) {
 	unpackers, err := shimmer.createUnpackers(ctx, buildpacks)
 	if err != nil {
 		return nil, fmt.Errorf("failed to build unpackers, %w", err)
 	}
-	localBuildpacks := make([]string, len(buildpacks))
+	localBuildpacks := make([]UnpackedBuildpack, len(buildpacks))
 	for ix, unpacker := range unpackers {
 		localBuildpackRoot, err := ioutil.TempDir("", "buildpack-shimmed-*")
 		if err != nil {
 			return nil, fmt.Errorf("unable to temp dir for buildpack %s, %w", unpacker.Buildpack(), err)
 		}
-		targetDir := filepath.Join(localBuildpackRoot, "target")
+		unpacked := UnpackedBuildpack{
+			Unpacker: unpacker,
+			LocalDir: localBuildpackRoot,
+		}
+		targetDir := unpacked.TargetDir()
 		if err := os.Mkdir(targetDir, os.ModePerm); err != nil {
 			return nil, fmt.Errorf("unable to create target dir %s, %w", unpacker.Buildpack(), err)
 		}
 		if err := unpacker.Unpack(ctx, targetDir); err != nil {
 			return nil, fmt.Errorf("unable to unpack %s, %w", unpacker.Buildpack(), err)
 		}
-		localBuildpacks[ix] = localBuildpackRoot
+		localBuildpacks[ix] = unpacked
 	}
 	return localBuildpacks, nil
+}
+
+func targetDirOf(buildpackRootDir string) string {
+	targetDir := filepath.Join(buildpackRootDir, "target")
+	return targetDir
+}
+
+// UnpackedBuildpack unpacked buildpack
+type UnpackedBuildpack struct {
+	Unpacker sources.Unpacker
+	LocalDir string
+}
+
+// TargetDir returns the target dir of a shimmed buildpack
+func (unpacked UnpackedBuildpack) TargetDir() string {
+	return targetDirOf(unpacked.LocalDir)
 }

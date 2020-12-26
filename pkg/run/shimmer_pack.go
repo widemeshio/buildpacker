@@ -22,7 +22,7 @@ func (pack *ShimmerPack) Run(ctx context.Context) error {
 		return err
 	}
 	config := pack.Config
-	config.Buildpacks = localBuildpacks
+	config.Buildpacks = localBuildpacks.LocalDirs()
 	runner := &CnbPack{
 		Config: config,
 	}
