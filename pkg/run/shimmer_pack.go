@@ -16,7 +16,7 @@ func (pack *ShimmerPack) Run(ctx context.Context) error {
 	shimmer := &shimmer.Shimmer{}
 	localBuildpacks, err := shimmer.Apply(ctx, pack.Buildpacks)
 	if err != nil {
-		return nil
+		return err
 	}
 	config := pack.Config
 	config.Buildpacks = localBuildpacks

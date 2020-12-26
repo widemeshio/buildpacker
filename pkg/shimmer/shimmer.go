@@ -17,7 +17,7 @@ type Shimmer struct {
 func (pack *Shimmer) Apply(ctx context.Context, buildpacks []string) ([]string, error) {
 	unpackers, err := pack.createSources(ctx, buildpacks)
 	if err != nil {
-		return nil, fmt.Errorf("failed to build unpackers")
+		return nil, fmt.Errorf("failed to build unpackers, %w", err)
 	}
 	localBuildpacks := make([]string, 0, len(buildpacks))
 	for ix, unpacker := range unpackers {
