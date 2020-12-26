@@ -15,6 +15,11 @@ import (
 // DefaultBuildpackAPIVersion the default API version to write to buildpack.toml
 const DefaultBuildpackAPIVersion = "0.4"
 
+// DefaultBuildpackStacks the stacks to write to buildpack.toml
+func DefaultBuildpackStacks() []string {
+	return []string{"heroku-18", "heroku-20"}
+}
+
 // Shimmer shims all the specified buildpacks
 type Shimmer struct {
 	Sources    []sources.Source
@@ -28,6 +33,14 @@ func (shimmer *Shimmer) BuildpackAPIVersion() string {
 		return v
 	}
 	return DefaultBuildpackAPIVersion
+}
+
+// BuildpackStacks the stacks to use in buildpack.toml
+func (shimmer *Shimmer) BuildpackStacks() []string {
+	if v := shimmer.Stacks; len(v) > 0 {
+		return shimmer.Stacks
+	}
+	return DefaultBuildpackStacks()
 }
 
 // Apply prepares all the specified buildpacks with a shim and returns path to local directories with shim applied
@@ -49,6 +62,7 @@ func (shimmer *Shimmer) Apply(ctx context.Context, buildpacks []string) (Shimmed
 			ID:      shimmedBuildpack.Unpacker.Buildpack(),
 			Name:    shimmedBuildpack.Unpacker.Buildpack(),
 			Version: "0.1",
+			Stacks:  shimmer.BuildpackStacks(),
 		})
 		if err != nil {
 			return nil, fmt.Errorf("failed to create buildpack.toml content, %w", err)
@@ -62,13 +76,17 @@ func (shimmer *Shimmer) Apply(ctx context.Context, buildpacks []string) (Shimmed
 }
 
 var buildpackToml = `
-id = "{{.APIID}}"
+api = "{{.APIID}}"
 
 [buildpack]
 id = "{{.ID}}"
 version = "{{.Version}}"
 name = "{{.Name}}"
 
+{{range .Stacks}}
+[[stacks]]
+id = "{{.}}"
+{{end}}
 `
 
 var buildpackTomlTemplate = template.Must(template.New("toml").Parse(buildpackToml))
@@ -78,6 +96,7 @@ type buildpackTomlTemplateParams struct {
 	ID      string
 	Name    string
 	Version string
+	Stacks  []string
 }
 
 // ShimmedBuildpack holds information about a shimmed buildpack
