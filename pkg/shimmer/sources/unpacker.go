@@ -6,4 +6,5 @@ import "context"
 type Unpacker interface {
 	Unpack(ctx context.Context, destinationDir string) error
 	Buildpack() string
+	RequestedVersion() string
 }

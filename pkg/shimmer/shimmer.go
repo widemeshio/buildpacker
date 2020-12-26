@@ -82,11 +82,15 @@ func (shimmer *Shimmer) Apply(ctx context.Context, buildpacks []string) (Shimmed
 		}
 		tomlFile := shimmedBuildpack.ShimBuildpackToml()
 		tomlContent := &bytes.Buffer{}
+		version := unpacked.Unpacker.RequestedVersion()
+		if version == "" {
+			version = "0.1"
+		}
 		err := buildpackTomlTemplate.Execute(tomlContent, &buildpackTomlTemplateParams{
 			APIID:   shimmer.BuildpackAPIVersion(),
 			ID:      shimmedBuildpack.Unpacker.Buildpack(),
 			Name:    shimmedBuildpack.Unpacker.Buildpack(),
-			Version: "0.1",
+			Version: version,
 			Stacks:  shimmer.BuildpackStacks(),
 		})
 		if err != nil {
