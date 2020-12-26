@@ -14,8 +14,8 @@ type Shimmer struct {
 }
 
 // Apply prepares all the specified buildpacks with a shim and returns path to local directories with shim applied
-func (pack *Shimmer) Apply(ctx context.Context, buildpacks []string) ([]string, error) {
-	unpackers, err := pack.createSources(ctx, buildpacks)
+func (shimmer *Shimmer) Apply(ctx context.Context, buildpacks []string) ([]string, error) {
+	unpackers, err := shimmer.createUnpackers(ctx, buildpacks)
 	if err != nil {
 		return nil, fmt.Errorf("failed to build unpackers, %w", err)
 	}
@@ -31,26 +31,4 @@ func (pack *Shimmer) Apply(ctx context.Context, buildpacks []string) ([]string, 
 		localBuildpacks[ix] = destinationDir
 	}
 	return localBuildpacks, nil
-}
-
-func (pack *Shimmer) createSource(ctx context.Context, buildpack string) sources.Unpacker {
-	for _, src := range pack.Sources {
-		unpacker := src.Create(buildpack)
-		if unpacker != nil {
-			return unpacker
-		}
-	}
-	return nil
-}
-
-func (pack *Shimmer) createSources(ctx context.Context, buildpacks []string) ([]sources.Unpacker, error) {
-	unpackers := make([]sources.Unpacker, 0, len(buildpacks))
-	for ix, buildpack := range buildpacks {
-		unpacker := pack.createSource(ctx, buildpack)
-		if unpacker == nil {
-			return nil, fmt.Errorf("no source was able to unpack buildpack %s", buildpack)
-		}
-		unpackers[ix] = unpacker
-	}
-	return unpackers, nil
 }
