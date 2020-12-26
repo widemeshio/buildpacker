@@ -4,11 +4,14 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"io/ioutil"
+	"net/http"
 	"os"
 	"path/filepath"
 	"text/template"
 
+	"github.com/mholt/archiver/v3"
 	"github.com/widemeshcloud/pack-shimmer/pkg/shimmer/sources"
 )
 
@@ -57,6 +60,17 @@ func (shimmer *Shimmer) CnbShimVersion() string {
 
 // Apply prepares all the specified buildpacks with a shim and returns path to local directories with shim applied
 func (shimmer *Shimmer) Apply(ctx context.Context, buildpacks []string) (ShimmedBuildpacks, error) {
+	shimSupportFile, err := ioutil.TempFile("", "cnd-shim-*.tgz")
+	if err != nil {
+		return nil, err
+	}
+	shimSupportFilepath := shimSupportFile.Name()
+	defer os.Remove(shimSupportFilepath)
+	shimSupportURL := fmt.Sprintf("https://github.com/heroku/cnb-shim/releases/download/v%s/cnb-shim-v%s.tgz", shimmer.CnbShimVersion(), shimmer.CnbShimVersion())
+	if err := downloadFile(shimSupportURL, shimSupportFilepath); err != nil {
+		return nil, fmt.Errorf("failed to unpack cnb-shim files, %w", err)
+	}
+
 	localBuildpacks, err := shimmer.unpack(ctx, buildpacks)
 	if err != nil {
 		return nil, err
@@ -80,6 +94,9 @@ func (shimmer *Shimmer) Apply(ctx context.Context, buildpacks []string) (Shimmed
 		}
 		if err := ioutil.WriteFile(tomlFile, tomlContent.Bytes(), os.ModePerm); err != nil {
 			return nil, fmt.Errorf("failed to create buildpack.toml, %w", err)
+		}
+		if err := archiver.Unarchive(shimSupportFilepath, unpacked.LocalDir); err != nil {
+			return nil, fmt.Errorf("failed to unpack cnb-shim files, %w", err)
 		}
 		shimmedBuildpacks[ix] = shimmedBuildpack
 	}
@@ -130,4 +147,28 @@ func (buildpacks ShimmedBuildpacks) LocalDirs() []string {
 		dirs[ix] = bp.LocalDir
 	}
 	return dirs
+}
+
+func downloadFile(url string, filepath string) error {
+	// Create the file
+	out, err := os.Create(filepath)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+
+	// Get the data
+	resp, err := http.Get(url)
+	if err != nil {
+		return err
+	}
+	defer resp.Body.Close()
+
+	// Write the body to file
+	_, err = io.Copy(out, resp.Body)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
