@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 	"text/template"
 
 	"github.com/mholt/archiver/v3"
@@ -86,9 +87,15 @@ func (shimmer *Shimmer) Apply(ctx context.Context, buildpacks []string) (Shimmed
 		if version == "" {
 			version = "0.1"
 		}
+		id := shimmedBuildpack.Unpacker.Buildpack()
+		if urlIndex := strings.Index(id, "://"); urlIndex != -1 {
+			id = id[urlIndex+3:]
+		}
+		id = strings.ReplaceAll(id, ":", "_")
+		id = strings.ReplaceAll(id, "//", "_")
 		err := buildpackTomlTemplate.Execute(tomlContent, &buildpackTomlTemplateParams{
 			APIID:   shimmer.BuildpackAPIVersion(),
-			ID:      shimmedBuildpack.Unpacker.Buildpack(),
+			ID:      id,
 			Name:    shimmedBuildpack.Unpacker.Buildpack(),
 			Version: version,
 			Stacks:  shimmer.BuildpackStacks(),
