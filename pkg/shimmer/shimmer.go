@@ -15,6 +15,9 @@ import (
 // DefaultBuildpackAPIVersion the default API version to write to buildpack.toml
 const DefaultBuildpackAPIVersion = "0.4"
 
+// DefaultCnbShimVersion the default cnb-shim version to use
+const DefaultCnbShimVersion = "0.2"
+
 // DefaultBuildpackStacks the stacks to write to buildpack.toml
 func DefaultBuildpackStacks() []string {
 	return []string{"heroku-18", "heroku-20"}
@@ -22,9 +25,10 @@ func DefaultBuildpackStacks() []string {
 
 // Shimmer shims all the specified buildpacks
 type Shimmer struct {
-	Sources    []sources.Source
-	APIVersion string
-	Stacks     []string
+	Sources     []sources.Source
+	APIVersion  string
+	Stacks      []string
+	ShimVersion string
 }
 
 // BuildpackAPIVersion the BuildpackAPIVersion to use in buildpack.toml
@@ -43,6 +47,14 @@ func (shimmer *Shimmer) BuildpackStacks() []string {
 	return DefaultBuildpackStacks()
 }
 
+// CnbShimVersion returns the cnb-shim version to use
+func (shimmer *Shimmer) CnbShimVersion() string {
+	if v := shimmer.ShimVersion; v != "" {
+		return shimmer.ShimVersion
+	}
+	return DefaultCnbShimVersion
+}
+
 // Apply prepares all the specified buildpacks with a shim and returns path to local directories with shim applied
 func (shimmer *Shimmer) Apply(ctx context.Context, buildpacks []string) (ShimmedBuildpacks, error) {
 	localBuildpacks, err := shimmer.unpack(ctx, buildpacks)
@@ -51,7 +63,6 @@ func (shimmer *Shimmer) Apply(ctx context.Context, buildpacks []string) (Shimmed
 	}
 	shimmedBuildpacks := make(ShimmedBuildpacks, len(localBuildpacks))
 	for ix, unpacked := range localBuildpacks {
-		// targetDir := unpacked.TargetDir()
 		shimmedBuildpack := ShimmedBuildpack{
 			UnpackedBuildpack: unpacked,
 		}
