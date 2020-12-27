@@ -60,7 +60,7 @@ func (shimmer *Shimmer) CnbShimVersion() string {
 }
 
 // Apply prepares all the specified buildpacks with a shim and returns path to local directories with shim applied
-func (shimmer *Shimmer) Apply(ctx context.Context, buildpacks []string) (ShimmedBuildpacks, error) {
+func (shimmer *Shimmer) Apply(ctx context.Context, buildpacks []string) (Buildpacks, error) {
 	shimSupportFile, err := ioutil.TempFile("", "cnd-shim-*.tgz")
 	if err != nil {
 		return nil, err
@@ -72,12 +72,15 @@ func (shimmer *Shimmer) Apply(ctx context.Context, buildpacks []string) (Shimmed
 		return nil, fmt.Errorf("failed to unpack cnb-shim files, %w", err)
 	}
 
-	localBuildpacks, err := shimmer.unpack(ctx, buildpacks)
+	prepared, err := shimmer.prepare(ctx, buildpacks)
 	if err != nil {
 		return nil, err
 	}
-	shimmedBuildpacks := make(ShimmedBuildpacks, len(localBuildpacks))
-	for ix, unpacked := range localBuildpacks {
+	for ix, buildpack := range prepared {
+		unpacked, ok := buildpack.(UnpackedBuildpack)
+		if !ok {
+			continue
+		}
 		shimmedBuildpack := ShimmedBuildpack{
 			UnpackedBuildpack: unpacked,
 		}
@@ -109,9 +112,9 @@ func (shimmer *Shimmer) Apply(ctx context.Context, buildpacks []string) (Shimmed
 		if err := archiver.Unarchive(shimSupportFilepath, unpacked.LocalDir); err != nil {
 			return nil, fmt.Errorf("failed to unpack cnb-shim files, %w", err)
 		}
-		shimmedBuildpacks[ix] = shimmedBuildpack
+		prepared[ix] = shimmedBuildpack
 	}
-	return shimmedBuildpacks, nil
+	return prepared, nil
 }
 
 var buildpackToml = `
@@ -146,18 +149,6 @@ type ShimmedBuildpack struct {
 // ShimBuildpackToml returns the path to the buildpack.toml of the shim
 func (shimmed ShimmedBuildpack) ShimBuildpackToml() string {
 	return filepath.Join(shimmed.LocalDir, "buildpack.toml")
-}
-
-// ShimmedBuildpacks slice of buildpacks with shim applied
-type ShimmedBuildpacks []ShimmedBuildpack
-
-// LocalDirs returns the names of the local buildpacks
-func (buildpacks ShimmedBuildpacks) LocalDirs() []string {
-	dirs := make([]string, len(buildpacks))
-	for ix, bp := range buildpacks {
-		dirs[ix] = bp.LocalDir
-	}
-	return dirs
 }
 
 func downloadFile(url string, filepath string) error {

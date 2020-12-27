@@ -17,12 +17,12 @@ type ShimmerPack struct {
 func (pack *ShimmerPack) Run(ctx context.Context) error {
 	shimmer := &shimmer.Shimmer{}
 	shimmer.InstallSources(sources.BuiltIn())
-	localBuildpacks, err := shimmer.Apply(ctx, pack.Buildpacks)
+	buildpacks, err := shimmer.Apply(ctx, pack.Buildpacks)
 	if err != nil {
 		return err
 	}
 	config := pack.Config
-	config.Buildpacks = localBuildpacks.LocalDirs()
+	config.Buildpacks = buildpacks.PackArguments()
 	runner := &CnbPack{
 		Config: config,
 	}
