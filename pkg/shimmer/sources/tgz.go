@@ -13,10 +13,12 @@ import (
 )
 
 func init() {
-	registerBuiltinSource(&tgzSource{})
+	registerBuiltinSource(tgz)
 }
 
 type tgzSource struct{}
+
+var tgz = &tgzSource{}
 
 func (src *tgzSource) Create(buildpack string) Unpacker {
 	if strings.HasSuffix(buildpack, ".tgz") || strings.HasSuffix(buildpack, ".tar.gz") {
