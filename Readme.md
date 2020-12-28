@@ -1,5 +1,7 @@
 # Widemesh Buildpacker
-> Cloud Native Buildpacks + Heroku Shims
+> Cloud-Native Buildpacks + Heroku Shims
+
+[![Tests status](https://github.com/widemeshcloud/buildpacker/workflows/test/badge.svg)](https://github.com/widemeshcloud/buildpacker/actions?query=workflow%3Atest)
 
 ## What is Buildpacker?
 
@@ -31,6 +33,6 @@ See `LICENSE`
 * git clone it
 * install requirements in `$PATH`
 * make your changes
-* Test your changes with scripts/test.sh
+* Test your changes with `scripts/test.sh`
 
 Contributions Welcome.
