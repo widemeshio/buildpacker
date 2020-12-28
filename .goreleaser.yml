@@ -13,6 +13,7 @@ archives:
   -
     id: targz
     format: tar.gz
+    name_template: "{{ .ProjectName }}_v{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}{{ if .Mips }}_{{ .Mips }}{{ end }}"
     replacements:
       amd64: x86_64
     format_overrides:
@@ -21,6 +22,7 @@ archives:
   -
     id: binary
     format: binary
+    name_template: "{{ .Binary }}_v{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}{{ if .Mips }}_{{ .Mips }}{{ end }}"
     replacements:
       amd64: x86_64
 checksum:
