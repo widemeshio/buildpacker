@@ -11,8 +11,8 @@ import (
 	"text/template"
 
 	"github.com/mholt/archiver/v3"
-	"github.com/widemeshcloud/pack-shimmer/pkg/dl"
-	"github.com/widemeshcloud/pack-shimmer/pkg/shimmer/sources"
+	"github.com/widemeshcloud/buildpacker/pkg/dl"
+	"github.com/widemeshcloud/buildpacker/pkg/shimmer/sources"
 )
 
 // DefaultBuildpackAPIVersion the default API version to write to buildpack.toml

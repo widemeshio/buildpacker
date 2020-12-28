@@ -3,7 +3,6 @@ package sources
 import (
 	"context"
 	"fmt"
-	"log"
 	"strings"
 )
 
@@ -21,7 +20,6 @@ func (src *herokuSource) Create(buildpack string) Unpacker {
 	registryNamespace := parts[0]
 	registryBuildpack := parts[1]
 	tgzFile := fmt.Sprintf("https://buildpack-registry.s3.amazonaws.com/buildpacks/%s/%s.tgz", registryNamespace, registryBuildpack)
-	log.Printf("tgz file: %s", tgzFile)
 	return &herokuUnpacker{
 		tgz.Create(tgzFile),
 		buildpack,

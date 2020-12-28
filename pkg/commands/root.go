@@ -5,13 +5,13 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/widemeshcloud/pack-shimmer/pkg/commands/build"
+	"github.com/widemeshcloud/buildpacker/pkg/commands/build"
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "pack-shimmer",
-	Short: "pack-shimmer - Cloud-Native buildpacks + Legacy Shims",
-	Long:  "pack-shimmer - builds Cloud-Native buildpacks automatically adding shims for old legacy Heroku buildpacks",
+	Use:   "buildpacker",
+	Short: "buildpacker - Cloud-Native buildpacks + Legacy Shims",
+	Long:  "buildpacker - builds Cloud-Native buildpacks automatically adding shims for old legacy Heroku buildpacks",
 }
 
 func init() {

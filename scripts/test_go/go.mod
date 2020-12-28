@@ -1,3 +1,3 @@
-module github.com/widemeshcloud/pack-shimmer/scripts/test
+module github.com/widemeshcloud/buildpacker/scripts/test
 
 go 1.15

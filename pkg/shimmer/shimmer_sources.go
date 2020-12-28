@@ -1,7 +1,7 @@
 package shimmer
 
 import (
-	"github.com/widemeshcloud/pack-shimmer/pkg/shimmer/sources"
+	"github.com/widemeshcloud/buildpacker/pkg/shimmer/sources"
 )
 
 // InstallSources installs a list of sources

@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/mholt/archiver/v3"
-	"github.com/widemeshcloud/pack-shimmer/pkg/dl"
+	"github.com/widemeshcloud/buildpacker/pkg/dl"
 )
 
 func init() {

@@ -1,4 +1,4 @@
-module github.com/widemeshcloud/pack-shimmer
+module github.com/widemeshcloud/buildpacker
 
 go 1.15
 

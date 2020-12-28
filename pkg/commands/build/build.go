@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/widemeshcloud/pack-shimmer/pkg/run"
+	"github.com/widemeshcloud/buildpacker/pkg/run"
 
 	"github.com/spf13/cobra"
 )

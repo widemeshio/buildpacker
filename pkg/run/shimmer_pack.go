@@ -3,9 +3,9 @@ package run
 import (
 	"context"
 
-	"github.com/widemeshcloud/pack-shimmer/pkg/shimmer/sources"
+	"github.com/widemeshcloud/buildpacker/pkg/shimmer/sources"
 
-	"github.com/widemeshcloud/pack-shimmer/pkg/shimmer"
+	"github.com/widemeshcloud/buildpacker/pkg/shimmer"
 )
 
 // ShimmerPack runs pack with shimmed buildpacks
