@@ -1,0 +1,8 @@
+name: Test
+on:
+  push:
+jobs:
+  run_test:
+    name: Run test script
+    run: scripts/test.sh
+
