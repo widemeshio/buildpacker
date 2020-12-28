@@ -1,0 +1,38 @@
+# This is an example goreleaser.yaml file with some sane defaults.
+# Make sure to check the documentation at http://goreleaser.com
+builds:
+  - env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64
+    main: ./cmd/buildpacker/main.go
+archives:
+  -
+    id: targz
+    format: tar.gz
+    replacements:
+      amd64: x86_64
+    format_overrides:
+      - goos: windows
+        format: zip
+  -
+    id: binary
+    format: binary
+    replacements:
+      amd64: x86_64
+checksum:
+  name_template: 'checksums.txt'
+snapshot:
+  name_template: "{{ .Tag }}-next"
+changelog:
+  sort: asc
+release:
+  github:
+    owner: widemeshcloud
+    name: buildpacker
+  name_template: "v{{.Version}}"
