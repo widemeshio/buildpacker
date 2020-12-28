@@ -4,15 +4,14 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io"
 	"io/ioutil"
-	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
 	"text/template"
 
 	"github.com/mholt/archiver/v3"
+	"github.com/widemeshcloud/pack-shimmer/pkg/dl"
 	"github.com/widemeshcloud/pack-shimmer/pkg/shimmer/sources"
 )
 
@@ -68,7 +67,7 @@ func (shimmer *Shimmer) Apply(ctx context.Context, buildpacks []string) (Buildpa
 	shimSupportFilepath := shimSupportFile.Name()
 	defer os.Remove(shimSupportFilepath)
 	shimSupportURL := fmt.Sprintf("https://github.com/heroku/cnb-shim/releases/download/v%s/cnb-shim-v%s.tgz", shimmer.CnbShimVersion(), shimmer.CnbShimVersion())
-	if err := downloadFile(shimSupportURL, shimSupportFilepath); err != nil {
+	if err := dl.DownloadFile(shimSupportURL, shimSupportFilepath); err != nil {
 		return nil, fmt.Errorf("failed to unpack cnb-shim files, %w", err)
 	}
 
@@ -149,28 +148,4 @@ type ShimmedBuildpack struct {
 // ShimBuildpackToml returns the path to the buildpack.toml of the shim
 func (shimmed ShimmedBuildpack) ShimBuildpackToml() string {
 	return filepath.Join(shimmed.LocalDir, "buildpack.toml")
-}
-
-func downloadFile(url string, filepath string) error {
-	// Create the file
-	out, err := os.Create(filepath)
-	if err != nil {
-		return err
-	}
-	defer out.Close()
-
-	// Get the data
-	resp, err := http.Get(url)
-	if err != nil {
-		return err
-	}
-	defer resp.Body.Close()
-
-	// Write the body to file
-	_, err = io.Copy(out, resp.Body)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }
