@@ -53,6 +53,9 @@ func (shimmer *Shimmer) prepare(ctx context.Context, buildpacks []string) (Build
 		if err := unpacker.Unpack(ctx, targetDir); err != nil {
 			return nil, fmt.Errorf("unable to unpack %s, %w", unpacker.Buildpack(), err)
 		}
+		if err := markAsExecutables(filepath.Join(targetDir, "bin")); err != nil {
+			return nil, fmt.Errorf("unable to mark target buildpack files as executables %s, %w", targetDir, err)
+		}
 		prepared[ix] = unpacked
 	}
 	return prepared, nil
@@ -77,4 +80,25 @@ func (unpacked UnpackedBuildpack) TargetDir() string {
 // PackArgument returns the argument for the pack command
 func (unpacked UnpackedBuildpack) PackArgument() string {
 	return unpacked.LocalDir
+}
+
+func markAsExecutables(dir string) error {
+	var files []string
+
+	err := filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		if info.IsDir() {
+			return nil
+		}
+		files = append(files, path)
+		return nil
+	})
+	if err != nil {
+		return fmt.Errorf("failed to walk filed to mark as executables, %w", err)
+	}
+	for _, file := range files {
+		if err := os.Chmod(file, 0700); err != nil {
+			return fmt.Errorf("failed to change permission of file %s, %w", file, err)
+		}
+	}
+	return nil
 }

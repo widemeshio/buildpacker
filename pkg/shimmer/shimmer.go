@@ -70,7 +70,6 @@ func (shimmer *Shimmer) Apply(ctx context.Context, buildpacks []string) (Buildpa
 	if err := dl.DownloadFile(shimSupportURL, shimSupportFilepath); err != nil {
 		return nil, fmt.Errorf("failed to unpack cnb-shim files, %w", err)
 	}
-
 	prepared, err := shimmer.prepare(ctx, buildpacks)
 	if err != nil {
 		return nil, err
