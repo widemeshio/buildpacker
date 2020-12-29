@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"strings"
 
@@ -48,11 +47,9 @@ func (unpacker *tgzUnpacker) Unpack(ctx context.Context, destinationDir string) 
 	}
 	tempFile := file.Name()
 	defer os.Remove(tempFile)
-	log.Printf("downloading tgz %s", tempFile)
 	if err := dl.DownloadFile(unpacker.buildpack, tempFile); err != nil {
 		return fmt.Errorf("failed to download tgz file, %w", err)
 	}
-	log.Printf("unarchiving tgz %s", destinationDir)
 	if err := archiver.Unarchive(tempFile, destinationDir); err != nil {
 		return fmt.Errorf("failed to unarchive tgz in destination directory, %w", err)
 	}

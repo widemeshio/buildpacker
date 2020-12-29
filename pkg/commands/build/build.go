@@ -14,6 +14,7 @@ var pathArg string
 var builderArg string
 var buildpacksArg []string
 var envsArg []string
+var trustBuilderArg bool
 
 // Command command definition
 var Command = &cobra.Command{
@@ -22,7 +23,7 @@ var Command = &cobra.Command{
 	Args:         cobra.MinimumNArgs(1),
 	SilenceUsage: true,
 	RunE: func(cmd *cobra.Command, args []string) error {
-		fmt.Fprintf(os.Stderr, "buildpacks shimmer building\n")
+		fmt.Fprintf(os.Stderr, "Widemesh Buildpacker\n")
 		imageTag := args[0]
 		pack := run.ShimmerPack{}
 		pack.Builder = builderArg
@@ -30,6 +31,7 @@ var Command = &cobra.Command{
 		pack.Env = envsArg
 		pack.ImageTag = imageTag
 		pack.Path = pathArg
+		pack.TrustBuilder = trustBuilderArg
 		return pack.Run(context.Background())
 	},
 }
@@ -37,6 +39,7 @@ var Command = &cobra.Command{
 func init() {
 	Command.Flags().StringVarP(&pathArg, "path", "p", ".", "--path <directory>")
 	Command.Flags().StringVarP(&builderArg, "builder", "B", "", "Builder image")
+	Command.Flags().BoolVarP(&trustBuilderArg, "trust-builder", "", false, "Trust the provided builder. All lifecycle phases will be run in a single container (if supported by the lifecycle).")
 	Command.Flags().StringSliceVarP(&envsArg, "env", "e", nil, `
 	Build-time environment variable, in the form 'VAR=VALUE' or 'VAR'.
                                  When using latter value-less form, value will be taken from current
