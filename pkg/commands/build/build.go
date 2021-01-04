@@ -15,6 +15,7 @@ var builderArg string
 var buildpacksArg []string
 var envsArg []string
 var trustBuilderArg bool
+var idFileArg string
 
 // Command command definition
 var Command = &cobra.Command{
@@ -32,6 +33,7 @@ var Command = &cobra.Command{
 		pack.ImageTag = imageTag
 		pack.Path = pathArg
 		pack.TrustBuilder = trustBuilderArg
+		pack.IDFile = idFileArg
 		return pack.Run(context.Background())
 	},
 }
@@ -55,4 +57,5 @@ func init() {
                                  Repeat for each buildpack in order,
 								   or supply once by comma-separated list
 								   `)
+	Command.Flags().StringVarP(&idFileArg, "id-file", "", "", "--id-file ids.json, the filename to write the ID of each original buildpack id")
 }

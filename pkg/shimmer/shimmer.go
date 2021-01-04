@@ -59,21 +59,22 @@ func (shimmer *Shimmer) CnbShimVersion() string {
 }
 
 // Apply prepares all the specified buildpacks with a shim and returns path to local directories with shim applied
-func (shimmer *Shimmer) Apply(ctx context.Context, buildpacks []string) (Buildpacks, error) {
+func (shimmer *Shimmer) Apply(ctx context.Context, buildpacks []string) (Buildpacks, IDDictionary, error) {
 	shimSupportFile, err := ioutil.TempFile("", "cnd-shim-*.tgz")
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	shimSupportFilepath := shimSupportFile.Name()
 	defer os.Remove(shimSupportFilepath)
 	shimSupportURL := fmt.Sprintf("https://github.com/heroku/cnb-shim/releases/download/v%s/cnb-shim-v%s.tgz", shimmer.CnbShimVersion(), shimmer.CnbShimVersion())
 	if err := dl.DownloadFile(shimSupportURL, shimSupportFilepath); err != nil {
-		return nil, fmt.Errorf("failed to unpack cnb-shim files, %w", err)
+		return nil, nil, fmt.Errorf("failed to unpack cnb-shim files, %w", err)
 	}
 	prepared, err := shimmer.prepare(ctx, buildpacks)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
+	ids := IDDictionary{}
 	for ix, buildpack := range prepared {
 		unpacked, ok := buildpack.(UnpackedBuildpack)
 		if !ok {
@@ -88,7 +89,8 @@ func (shimmer *Shimmer) Apply(ctx context.Context, buildpacks []string) (Buildpa
 		if version == "" {
 			version = "0.1"
 		}
-		id := shimmedBuildpack.Unpacker.Buildpack()
+		originalID := shimmedBuildpack.Unpacker.Buildpack()
+		id := originalID
 		if urlIndex := strings.Index(id, "://"); urlIndex != -1 {
 			id = id[urlIndex+3:]
 		}
@@ -102,17 +104,18 @@ func (shimmer *Shimmer) Apply(ctx context.Context, buildpacks []string) (Buildpa
 			Stacks:  shimmer.BuildpackStacks(),
 		})
 		if err != nil {
-			return nil, fmt.Errorf("failed to create buildpack.toml content, %w", err)
+			return nil, nil, fmt.Errorf("failed to create buildpack.toml content, %w", err)
 		}
 		if err := ioutil.WriteFile(tomlFile, tomlContent.Bytes(), os.ModePerm); err != nil {
-			return nil, fmt.Errorf("failed to create buildpack.toml, %w", err)
+			return nil, nil, fmt.Errorf("failed to create buildpack.toml, %w", err)
 		}
 		if err := archiver.Unarchive(shimSupportFilepath, unpacked.LocalDir); err != nil {
-			return nil, fmt.Errorf("failed to unpack cnb-shim files, %w", err)
+			return nil, nil, fmt.Errorf("failed to unpack cnb-shim files, %w", err)
 		}
 		prepared[ix] = shimmedBuildpack
+		ids[originalID] = id
 	}
-	return prepared, nil
+	return prepared, ids, nil
 }
 
 var buildpackToml = `
