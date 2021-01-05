@@ -89,7 +89,7 @@ func (shimmer *Shimmer) Apply(ctx context.Context, buildpacks []string) (Buildpa
 		if version == "" {
 			version = "0.1"
 		}
-		originalID := shimmedBuildpack.Unpacker.Buildpack()
+		originalID := shimmedBuildpack.Unpacker.CanonicalBuildpack()
 		id := originalID
 		if urlIndex := strings.Index(id, "://"); urlIndex != -1 {
 			id = id[urlIndex+3:]
@@ -99,7 +99,7 @@ func (shimmer *Shimmer) Apply(ctx context.Context, buildpacks []string) (Buildpa
 		err := buildpackTomlTemplate.Execute(tomlContent, &buildpackTomlTemplateParams{
 			APIID:   shimmer.BuildpackAPIVersion(),
 			ID:      id,
-			Name:    shimmedBuildpack.Unpacker.Buildpack(),
+			Name:    shimmedBuildpack.Unpacker.OriginalBuildpack(),
 			Version: version,
 			Stacks:  shimmer.BuildpackStacks(),
 		})
@@ -113,7 +113,7 @@ func (shimmer *Shimmer) Apply(ctx context.Context, buildpacks []string) (Buildpa
 			return nil, nil, fmt.Errorf("failed to unpack cnb-shim files, %w", err)
 		}
 		prepared[ix] = shimmedBuildpack
-		ids[originalID] = id
+		ids[shimmedBuildpack.Unpacker.OriginalBuildpack()] = id
 	}
 	return prepared, ids, nil
 }

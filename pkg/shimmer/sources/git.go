@@ -20,25 +20,32 @@ func (src *gitSource) Create(buildpack string) Unpacker {
 		index := strings.Index(buildpack, gitURLVersionMatch)
 		version := buildpack[index+len(gitURLVersionMatch):]
 		return &gitUnpacker{
-			buildpack: buildpack[:index],
-			version:   version,
+			originalBuildpack:  buildpack,
+			canonicalBuildpack: buildpack[:index] + ".git",
+			version:            version,
 		}
 	}
 	if strings.HasSuffix(buildpack, ".git") {
 		return &gitUnpacker{
-			buildpack: buildpack,
+			originalBuildpack:  buildpack,
+			canonicalBuildpack: buildpack,
 		}
 	}
 	return nil
 }
 
 type gitUnpacker struct {
-	buildpack string
-	version   string
+	originalBuildpack  string
+	canonicalBuildpack string
+	version            string
 }
 
-func (unpacker *gitUnpacker) Buildpack() string {
-	return unpacker.buildpack
+func (unpacker *gitUnpacker) CanonicalBuildpack() string {
+	return unpacker.canonicalBuildpack
+}
+
+func (unpacker *gitUnpacker) OriginalBuildpack() string {
+	return unpacker.originalBuildpack
 }
 
 func (unpacker *gitUnpacker) RequestedVersion() string {
@@ -46,7 +53,7 @@ func (unpacker *gitUnpacker) RequestedVersion() string {
 }
 
 func (unpacker *gitUnpacker) Unpack(ctx context.Context, destinationDir string) error {
-	cmd := exec.Command("git", "clone", unpacker.buildpack, destinationDir)
+	cmd := exec.Command("git", "clone", unpacker.canonicalBuildpack, destinationDir)
 	cmd.Stdin = os.Stdin
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr

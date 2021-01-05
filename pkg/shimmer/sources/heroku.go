@@ -31,10 +31,13 @@ type herokuUnpacker struct {
 	buildpack   string
 }
 
-func (unpacker *herokuUnpacker) Buildpack() string {
+func (unpacker *herokuUnpacker) CanonicalBuildpack() string {
 	return unpacker.buildpack
 }
 
+func (unpacker *herokuUnpacker) OriginalBuildpack() string {
+	return unpacker.buildpack
+}
 func (unpacker *herokuUnpacker) RequestedVersion() string {
 	return ""
 }

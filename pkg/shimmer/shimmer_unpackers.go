@@ -40,7 +40,7 @@ func (shimmer *Shimmer) prepare(ctx context.Context, buildpacks []string) (Build
 		}
 		localBuildpackRoot, err := ioutil.TempDir("", "buildpack-shimmed-*")
 		if err != nil {
-			return nil, fmt.Errorf("unable to temp dir for buildpack %s, %w", unpacker.Buildpack(), err)
+			return nil, fmt.Errorf("unable to temp dir for buildpack %s, %w", unpacker.OriginalBuildpack(), err)
 		}
 		unpacked := UnpackedBuildpack{
 			Unpacker: unpacker,
@@ -48,10 +48,10 @@ func (shimmer *Shimmer) prepare(ctx context.Context, buildpacks []string) (Build
 		}
 		targetDir := unpacked.TargetDir()
 		if err := os.Mkdir(targetDir, os.ModePerm); err != nil {
-			return nil, fmt.Errorf("unable to create target dir %s, %w", unpacker.Buildpack(), err)
+			return nil, fmt.Errorf("unable to create target dir %s, %w", unpacker.OriginalBuildpack(), err)
 		}
 		if err := unpacker.Unpack(ctx, targetDir); err != nil {
-			return nil, fmt.Errorf("unable to unpack %s, %w", unpacker.Buildpack(), err)
+			return nil, fmt.Errorf("unable to unpack %s, %w", unpacker.OriginalBuildpack(), err)
 		}
 		if err := markAsExecutables(filepath.Join(targetDir, "bin")); err != nil {
 			return nil, fmt.Errorf("unable to mark target buildpack files as executables %s, %w", targetDir, err)

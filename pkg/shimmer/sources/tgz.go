@@ -32,7 +32,11 @@ type tgzUnpacker struct {
 	buildpack string
 }
 
-func (unpacker *tgzUnpacker) Buildpack() string {
+func (unpacker *tgzUnpacker) CanonicalBuildpack() string {
+	return unpacker.buildpack
+}
+
+func (unpacker *tgzUnpacker) OriginalBuildpack() string {
 	return unpacker.buildpack
 }
 
