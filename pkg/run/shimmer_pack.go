@@ -7,9 +7,9 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/widemeshcloud/buildpacker/pkg/shimmer/sources"
+	"github.com/widemeshio/buildpacker/pkg/shimmer/sources"
 
-	"github.com/widemeshcloud/buildpacker/pkg/shimmer"
+	"github.com/widemeshio/buildpacker/pkg/shimmer"
 )
 
 // ShimmerPack runs pack with shimmed buildpacks

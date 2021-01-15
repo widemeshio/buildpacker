@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/widemeshcloud/buildpacker/pkg/shimmer/sources"
+	"github.com/widemeshio/buildpacker/pkg/shimmer/sources"
 )
 
 func (shimmer *Shimmer) createUnpacker(ctx context.Context, buildpack string) sources.Unpacker {

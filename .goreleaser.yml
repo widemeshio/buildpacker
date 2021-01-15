@@ -33,6 +33,6 @@ changelog:
   sort: asc
 release:
   github:
-    owner: widemeshcloud
+    owner: widemeshio
     name: buildpacker
   name_template: "v{{.Version}}"

@@ -1,7 +1,7 @@
 # Widemesh Buildpacker
 > Cloud-Native Buildpacks + Heroku Shims
 
-[![Tests status](https://github.com/widemeshcloud/buildpacker/workflows/test/badge.svg)](https://github.com/widemeshcloud/buildpacker/actions?query=workflow%3Atest)
+[![Tests status](https://github.com/widemeshio/buildpacker/workflows/test/badge.svg)](https://github.com/widemeshio/buildpacker/actions?query=workflow%3Atest)
 
 ## What is Buildpacker?
 

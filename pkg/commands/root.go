@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-	"github.com/widemeshcloud/buildpacker/pkg/commands/build"
+	"github.com/widemeshio/buildpacker/pkg/commands/build"
 )
 
 var rootCmd = &cobra.Command{

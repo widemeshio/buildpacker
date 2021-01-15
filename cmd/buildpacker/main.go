@@ -1,6 +1,6 @@
 package main
 
-import "github.com/widemeshcloud/buildpacker/pkg/commands"
+import "github.com/widemeshio/buildpacker/pkg/commands"
 
 func main() {
 	commands.Execute()

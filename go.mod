@@ -1,4 +1,4 @@
-module github.com/widemeshcloud/buildpacker
+module github.com/widemeshio/buildpacker
 
 go 1.15
 
